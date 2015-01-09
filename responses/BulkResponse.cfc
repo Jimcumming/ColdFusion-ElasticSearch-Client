@@ -35,7 +35,7 @@ component extends="Response" accessors="true" implements="IResponse" {
 					IndexResponse.setSuccess(false);
 					IndexResponse.setOk(false);
 				}else{
-					IndexResponse.setOk(getBody().items[i][Container]["ok"]);
+					///IndexResponse.setOk(getBody().items[i][Container]["ok"]);
 					IndexResponse.setSuccess(IndexResponse.getOk());
 				}
 
