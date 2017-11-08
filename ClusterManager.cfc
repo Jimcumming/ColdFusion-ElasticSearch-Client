@@ -58,26 +58,34 @@ component accessors="true"{
 	}
 
 	public struct function doRequest(string Endpoint=getEndPoint(), required string Resource, string Method="GET", string Body="", string ResponseType="Response"){
-		var httpSvc = new http();
+
+		var sendResult = {};
+
+
+		if(len(trim(Arguments.Body)) && find("@", arguments.endpoint)){
+			// body content and basic auth
+			cfhttp(method=arguments.method, charset="utf-8", url=arguments.endpoint  & Arguments.Resource, result="sendResult"
+					authType="basic", username=listFirst(basicAuth, ":"), password=listLast(basicAuth, ":")) {
+		    	cfhttpparam(type="body", value=arguments.body);
+			}
+		} else if(len(trim(Arguments.Body))){
+			// body content
+			cfhttp(method=arguments.method, charset="utf-8", url=arguments.endpoint  & Arguments.Resource, result="sendResult") {
+		    	cfhttpparam(type="body", value=arguments.body);
+			}
+		} else if (find("@", arguments.endpoint)) {
+			// basic auth
+			cfhttp(method=arguments.method, charset="utf-8", url=arguments.endpoint  & Arguments.Resource, result="sendResult"
+					authType="basic", username=listFirst(basicAuth, ":"), password=listLast(basicAuth, ":")) {
+			}
+		} else {
+			// none of the above
+			cfhttp(method=arguments.method, charset="utf-8", url=arguments.endpoint  & Arguments.Resource, result="sendResult") {}
+		}
+
 		var response = createObject("component", "responses.#arguments.ResponseType#").init();
 
-			if(find("@", arguments.endpoint)){
-				var basicAuth = listLast(listFirst(arguments.endpoint, "@"), "/");
-				httpSvc.setUsername(listFirst(basicAuth, ":"));
-				httpSvc.setPassword(listLast(basicAuth, ":"));
-			}
-
-			httpSvc.setUrl(arguments.endpoint  & Arguments.Resource);
-			httpSvc.setMethod(Arguments.Method);
-
-			if(len(trim(Arguments.Body))){
-				httpSvc.addParam(type="body",value=Arguments.Body); 
-			}
-
-		var sendResult = httpSvc.send().getPrefix();
-
 		response.handleResponse(sendResult);
-
 		return response;
 
 	}
