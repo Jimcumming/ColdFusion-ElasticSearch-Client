@@ -64,23 +64,23 @@ component accessors="true"{
 
 		if(len(trim(Arguments.Body)) && find("@", arguments.endpoint)){
 			// body content and basic auth
-			cfhttp(method=arguments.method, charset="utf-8", url=arguments.endpoint  & Arguments.Resource, result="sendResult"
+			cfhttp(method=arguments.method, charset="utf-8", timeout=30, url=arguments.endpoint  & Arguments.Resource, result="sendResult"
 					authType="basic", username=listFirst(basicAuth, ":"), password=listLast(basicAuth, ":")) {
 		    	cfhttpparam(type="body", value=arguments.body);
 			}
 		} else if(len(trim(Arguments.Body))){
 			// body content
-			cfhttp(method=arguments.method, charset="utf-8", url=arguments.endpoint  & Arguments.Resource, result="sendResult") {
+			cfhttp(method=arguments.method, charset="utf-8", timeout=30, url=arguments.endpoint  & Arguments.Resource, result="sendResult") {
 		    	cfhttpparam(type="body", value=arguments.body);
 			}
 		} else if (find("@", arguments.endpoint)) {
 			// basic auth
-			cfhttp(method=arguments.method, charset="utf-8", url=arguments.endpoint  & Arguments.Resource, result="sendResult"
+			cfhttp(method=arguments.method, charset="utf-8", timeout=30, url=arguments.endpoint  & Arguments.Resource, result="sendResult"
 					authType="basic", username=listFirst(basicAuth, ":"), password=listLast(basicAuth, ":")) {
 			}
 		} else {
 			// none of the above
-			cfhttp(method=arguments.method, charset="utf-8", url=arguments.endpoint  & Arguments.Resource, result="sendResult") {}
+			cfhttp(method=arguments.method, charset="utf-8", timeout=30, url=arguments.endpoint  & Arguments.Resource, result="sendResult") {}
 		}
 
 		var response = createObject("component", "responses.#arguments.ResponseType#").init();
